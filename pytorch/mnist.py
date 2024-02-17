@@ -1,3 +1,4 @@
+import sys
 import torch
 import torch.nn as nn
 import torchvision
@@ -10,10 +11,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Hyper-parameters
 input_size = 784
 hidden_size = 500
-num_classes = 10
+num_classes = 10 # or output_size
 num_epochs = 5
 batch_size = 100
-learning_rate = 0.001
+learning_rate = 0.001 # or 1e-3
 
 # MNIST dataset
 train_dataset = torchvision.datasets.MNIST(root='./data',
@@ -22,7 +23,7 @@ train_dataset = torchvision.datasets.MNIST(root='./data',
                                            download=True)
 
 test_dataset = torchvision.datasets.MNIST(root='./data',
-                                          train=True,
+                                          train=False,
                                           transform=transforms.ToTensor())
 
 # Split the train dataset into train and validation datasets
@@ -52,10 +53,10 @@ print(samples.shape, labels.shape)
 for i in range(6):
     plt.subplot(2, 3, i+1)
     plt.imshow(samples[i][0], cmap='gray')
-# plt.show()
+plt.show()
 
 
-# Fully connected neural network with one hidden layer
+# Fully connected neural network with one hidden layer (Multi-Layer Perceptron)
 class NeuralNet(nn.Module):
     def __init__(self, input_size, hidden_size, num_classes):
         super(NeuralNet, self).__init__()
@@ -85,7 +86,7 @@ for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(train_loader):
 
         # Reshape images to (batch_size, input_size)
-        images = images.reshape(-1, 28*28).to(device)
+        images = images.reshape(-1, 28*28).to(device) # (100, 784) or (batch_size, input_size)
         labels = labels.to(device)
         
         # Forward pass
@@ -130,7 +131,7 @@ with torch.no_grad():
         outputs = model(images)
 
         # max returns (value ,index)
-        _, predicted = torch.max(outputs, 1)
+        _, predicted = torch.max(outputs, 1) # [0.1, 0.3, 0.5]
         n_samples += labels.size(0)
         n_correct += (predicted == labels).sum().item()
 
